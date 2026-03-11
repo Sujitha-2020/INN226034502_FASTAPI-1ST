@@ -79,12 +79,12 @@ def compare_products(product_id_1:int, product_id_2:int):
         "product_2":p2,
         "better_value":cheaper['name']
     }
-
+#..ASSIGNMENT -2 .....
 #Q-4 : - Product Summary
 
 @app.get("/products/summary")
 def product_summary():
-    # 1. Safety check for empty data
+    
     if not products:
         return {
             "total_products": 0,
@@ -95,19 +95,19 @@ def product_summary():
             "categories": []
         }
 
-    # 2. Count Stock (One pass for efficiency)
+    
     in_stock_list = [p for p in products if p.get("in_stock")]
     in_stock_count = len(in_stock_list)
     out_of_stock_count = len(products) - in_stock_count
 
-    # 3. Find Extremes (Most Expensive & Cheapest)
+    
     expensive = max(products, key=lambda p: p["price"])
     cheapest = min(products, key=lambda p: p["price"])
 
-    # 4. Get Unique Categories
+   
     categories = list(set(p["category"] for p in products))
 
-    # 5. Return precise structure requested
+   
     return {
         "total_products": len(products),
         "in_stock_count": in_stock_count,
@@ -198,7 +198,7 @@ def get_product_price(product_id: int):
             }
     return{"error": "Product not found"}
 
-#Q-3
+#Q-3 CUSTOMER FEEDBACK
 class CustomerFeedback(BaseModel):
     customer_name: str = Field(..., min_length=2)
     product_id: int = Field(..., gt=0)
@@ -225,7 +225,6 @@ class OrderItem(BaseModel):
     product_id: int = Field(..., gt=0)
     quantity: int = Field(..., gt=0, le=50)
 
-# 🛡️ Model for the bulk order
 class BulkOrder(BaseModel):
     company_name: str = Field(..., min_length=2)
     contact_email: str = Field(..., min_length=5)
@@ -247,13 +246,11 @@ def place_bulk_order(order: BulkOrder):
                 "reason": "Product not found"
             })
         elif not product["in_stock"]:
-            # ⚠️ Handle out of stock while continuing the loop
             failed.append({
                 "product_id": item.product_id, 
                 "reason": f"{product['name']} is out of stock"
             })
         else:
-            # Calculate total for valid items
             subtotal = product["price"] * item.quantity
             grand_total += subtotal
             confirmed.append({
@@ -269,9 +266,9 @@ def place_bulk_order(order: BulkOrder):
         "confirmed": confirmed,
         "failed": failed,
         "grand_total": grand_total,
-        "status": "pending" # Important for your PATCH endpoint!
+        "status": "pending"
     }
-    orders.append(new_bulk_order) # This makes count go up!
+    orders.append(new_bulk_order) 
     order_counter += 1
     return new_bulk_order
 
